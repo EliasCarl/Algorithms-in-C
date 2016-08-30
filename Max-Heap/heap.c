@@ -136,7 +136,7 @@ void print_array(int array[], int len)
  *
  * 4. The root element swapped in (2) is still unprocessed, to incorporate 
  *    the new root into the max-heap below (remember, this new max-heap is
- *    the elements a[0 .. n-len]) we call max_heapify(a, 0, len).  
+ *    the elements a[0 .. len]) we call max_heapify(a, 0, len).  
  *
  * 5. Since the subarray a[0 .. n-len] is now a max-heap, start over at (2).
  */
