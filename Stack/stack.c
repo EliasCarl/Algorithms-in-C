@@ -1,52 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* A node */
-typedef struct node
-{
-    int data;
-    int key;
-    struct node* next;
-} node;
+#include "stack.h"
 
-/* List head */
 node* head = NULL;
 
-node* create_node(int data, int key)
+node* create_node(int value, int key)
 {
     node *new_node = malloc(sizeof(node));
-    new_node->data = data;
+    new_node->value = value;
     new_node->key = key;
     new_node->next = NULL;
     return new_node;
 }
 
-void init_list(node* pNode)
+void initialize(node* node)
 {
     if (head != NULL)
     {
         printf("Can't initialize an existing list\n");
     }
-    head = pNode;
+    head = node;
 }
 
-/* Insert a node at the beginning of the list */
-void insert_first(node* pNode)
+void insert_beginning(node* node)
 {
-    pNode->next = head;
-    head = pNode;
+    node->next = head;
+    head = node;
 }
 
-/* Remove and return first element in the list */
-node* pop_first()
+node* pop()
 {
-    /* Store a pointer to the current head */
     node* popped = head;
-
-    /* Make head point to the second element */
     head = head->next;
-
-    /* Returned the previous head */
     return popped;
 }
 
@@ -58,23 +44,20 @@ void print_list()
     node* current = head;
     while (current != NULL)
     {
-        node* next = current->next;
-
         printf("Element: %-2d ", i++);
-        printf("[Key: %d, Data: %d ", current->key, current->data);
+        printf("[Key: %d, Data: %d ", current->key, current->value);
 
         /* Some logic for printing NULL string if next == NULL */
-
-        if (next == NULL)
+        if (current->next == NULL)
         {
             printf("Next: NULL]\n");
         }
         else
         {
-            printf("Next: %d]\n", next->key);
+            printf("Next: %d]\n", current->next->key);
         }
 
-        current = next;
+        current = current->next;
     } 
 }
 
@@ -92,14 +75,14 @@ int main(void)
      * Some testing...
      */
 
-    init_list(first_node);
-    insert_first(second_node);
-    insert_first(third_node);
+    initialize(first_node);
+    insert_beginning(second_node);
+    insert_beginning(third_node);
 
     print_list();
 
     printf("\nPopping first...\n\n");
-    pop_first();
+    pop();
 
     print_list();
 
