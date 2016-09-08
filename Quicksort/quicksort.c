@@ -10,17 +10,42 @@ int main(void)
 {
     int array[ARRAY_SIZE] = {4,1,3,2,16,9,10,14,8,7,20,66,11,16,12};
     int len = sizeof(array) / sizeof(int);
-    print_array(array,len); 
 
-    int q = partition(array, 0, len-1);
-
-    print_array(array,len);
-    printf("%d\n", q);
+    quicksort(array, 0, len-1);
 }
 
 void quicksort(int a[], int p, int r)
 {
+    printf("Pivot: %-2d ", a[r]);
+    print_array(a,ARRAY_SIZE);
 
+    int q;
+
+    if (p < r)
+    {
+        /*
+         * Partition the subarray we were given. We need the index
+         * of the pivot in the next two recursive calls. Note that
+         * the pivot a[r] is not always perfect and will sometimes
+         * give different sized partitions. Here we have set the
+         * pivot to the last element for simplicity.
+         *
+         * Note also that the pivot is now in its right place and 
+         * not in subsequent calls to quicksort.
+         */
+        q = partition(a, p, r);
+
+
+        /*
+         * Quicksort the subarray a[p...q-1]. This means that we 
+         * partition this subarray "around" the new pivot q-1.  
+         */
+        quicksort(a, p, q-1);
+
+
+        /* Same */
+        quicksort(a, q+1, r);
+    }
 }
 
 /*
@@ -32,10 +57,10 @@ int partition(int a[], int p, int r)
 {
     int temp;
 
-    /* Pivot */
+    /* Here we select our pivot */
     int x = a[r];
 
-    /* Index of last element in lower partition */ 
+    /* Index of last element in lower partition. */ 
     int i = p - 1;
 
     for (int j = p; j < r; j++)
@@ -56,7 +81,7 @@ int partition(int a[], int p, int r)
     /*
      * Now j == r, and a[r] is our pivot. We want to move the pivot into
      * the correct place, which is between the lower and higher partitions.
-     * We know that since i is the index to the lest element in the lower 
+     * We know that since i is the index to the last element in the lower 
      * partition, i+1 is the first element in the higher partition.
      */
 
