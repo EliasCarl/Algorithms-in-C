@@ -17,3 +17,4 @@ typedef union header Header;
 
 Header* morecore(size_t);
 void* kr_malloc(size_t);
+void free(void* ptr);
