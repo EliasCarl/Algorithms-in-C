@@ -18,7 +18,7 @@ static Header *freeptr = NULL;  /* search for space starting at this pointer */
  */
 void* kr_malloc(size_t nbytes)
 {
-    Header* currptrtr;          /* current Header */
+    Header* currptr;          /* current Header */
     Header* prevptr;            /* previous Header  */
     size_t  nunits;             /* number of Header sizes needed for allocation  */
     void*   result;             /* pointer to the space found */
