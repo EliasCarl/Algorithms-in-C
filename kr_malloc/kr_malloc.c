@@ -100,18 +100,24 @@ void* kr_malloc(size_t nbytes)
 
 static Header *morecore(size_t units)
 {
+    Header* up;
+
     if (units < NALLOC)
     {
         units = NALLOC;
     }
 
     void* block_ptr;
+
+    /* request to move the program break */
     block_ptr = sbrk(units * sizeof Header);
     if (block_ptr == (void*) -1)
     {
         return NULL;
     }
 
-    // TODO: Finish this.
+    up = (Header* ) block_ptr;                        /* cast to our own Header* */
+    up->s.size = units;                               /* set size of new block header */
+    free((void*) up + 1);                             /* place the new block in the list */
 
 }
