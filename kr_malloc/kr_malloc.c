@@ -103,6 +103,7 @@ static Header *morecore(size_t units)
     void* newmem;
     Header* headerptr;
 
+    /* Allocate at least (1024 * sizeof Header) bytes */
     if (units < NALLOC)
     {
         units = NALLOC;
@@ -112,10 +113,11 @@ static Header *morecore(size_t units)
     newmem = sbrk(units * sizeof Header);
     if (newmem == (void*) -1)
     {
+        /* OS couldn't give us any memory */
         return NULL;
     }
 
-    headerptr = (Header* ) newmem;                    /* cast to our own Header* */
+    headerptr = (Header*) newmem;                     /* cast to our own Header type */
     headerptr->s.size = units;                        /* set size of new block header */
     free((void*) headerptr + 1);                      /* place the new block in the list */
     return freeptr;                                   /* returns the start of the list */
@@ -123,5 +125,69 @@ static Header *morecore(size_t units)
 
 void free(void* ptr)
 {
-    /* TODO: Finish */
+    /* TODO: Cleanup: variable naming etc */
+
+    Header* hp;
+    Header* currptr;
+    
+    bp = (Header*) ptr - 1;                           /* point hp to the header block */
+
+    /* 
+     * We traverse the list of (free) blocks and stop
+     * once we find the header of the block just before
+     * the one we're trying to free.
+     *
+     * The first for loop exits if the heaper pointer (hp)
+     * is between the current block and the next one. The
+     * inner if statement handles the case where hp is a
+     * block in the beginning or end of the list.
+     */
+    for (currptr = freep; !(hp > currptr && hp < currptr->s.next); currptr = currptr->s.next)
+    {
+        if (currptr >= curreptr->s.next && (hp > currptr || hp < currptr->s.next))
+        {
+            break;
+        }
+    }
+
+    /* Now currptr points to the header of the block just
+     * before hp and currptr->s.next is the block immediately
+     * after block hp.
+     */
+
+    if (hp + hp->s.size == currptr->s.next)
+    {
+        /*
+         * If hp is immediately adjacent to currptr->s.next,
+         * meaning there are no allocated blocks between them,
+         * then merge the two together. If not, just point hp 
+         * next without merging.
+         */
+
+        hp->s.size += currptr->s.next->s.size;
+        hp->s.next = currptr->s.next->s.next;
+    }
+    else
+    {
+        hp->s.next = currptr->s.next;
+    }
+
+    /*
+     * Do the same thing but for the block before hp.
+     */
+    if (currptr + currptr->s.size == hp)
+    {
+        currptr->s.size += hp->s.size;
+        currptr->s.next = hp->s.next;
+    }
+    else
+    {
+        currptr->s.next = hp;
+    }
+
+    /* 
+     * Set the freep to p so that the next search for
+     * free blocks will begin at our newly freed block
+     */
+    freep = p;
 }
